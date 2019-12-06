@@ -1,0 +1,205 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import javax.swing.*;
+
+// Starter code for HangmanGUI.
+//Lars Ostmann
+//Comp 163-01
+public class HangmanGUI extends JFrame implements ActionListener {
+
+   // TODO: YOUR CODE HERE
+   // Add any necessary fields to keep track of state
+   
+   private JLabel secretwordLabel;
+   private JTextField secretWordInput; //the actual secretword
+   private JButton guessButton;
+   private JButton hintButton;
+   private int numGuesses;
+   private JLabel youWin;
+   private JLabel rightInput;
+   private JLabel usedLetters;
+   private JLabel guessLetter;
+   private JLabel guessesLeft;
+   private JLabel generatedLetter;
+   private String secretwordInput; //the string/letters user is inputting for secret word
+   private int GuessesLeft;
+   private String userGuesses;
+
+   
+   //constructor
+   public HangmanGUI(String secretWord) {
+      setSize(700, 125);
+      setTitle("Hangman Game");
+      setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);   
+         
+         
+         
+         Container pane = getContentPane();
+         
+         GuessesLeft = 8;
+         
+         userGuesses = "";
+         
+         //assigning secretword to user input 
+         this.secretwordInput = secretWord;
+       
+         
+         //sets initial state for hangman game
+         numGuesses = 0;
+         
+         //youWinlabel
+         youWin = new JLabel("You Win!");
+         pane.add(youWin);
+         
+         rightInput = new JLabel("-------");
+         pane.add(rightInput);
+         
+         //used letters label
+         usedLetters = new JLabel("Used Letters:");
+         pane.add(usedLetters);
+         
+         //prompt user to guess a letter label
+         guessLetter = new JLabel("Guess a letter:");
+         pane.add(guessLetter);
+        
+         //secretword input
+         this.secretWordInput = new JTextField();
+         pane.add(secretWordInput);
+         
+         //Guessing button
+         this.guessButton = new JButton ("Guess");
+         pane.add(guessButton);
+         guessButton.addActionListener(this);
+         
+         //generated letter
+         generatedLetter = new JLabel("Generated Letter:");
+         pane.add(generatedLetter);
+         
+         //guessesLeft label
+         guessesLeft = new JLabel("Guesses left: 8");
+         pane.add(guessesLeft);
+         
+         
+         //Hint Button
+         this.hintButton = new JButton ("Hint");
+         pane.add(hintButton);
+         hintButton.addActionListener(this);
+         
+         
+         
+         
+      // layout
+      GridLayout layout = new GridLayout(3, 3);
+      setLayout(layout);
+   }
+   
+   public void actionPerformed(ActionEvent event) {
+     
+      // Handle any events  
+      
+      
+    if (event.getSource() == guessButton) {      
+         System.out.println(secretwordInput);
+         System.out.println(secretWordInput.getText());
+       //  secretWordInput.getText()contains(secretwordInput);
+         
+          String Letter = secretWordInput.getText();
+         
+          if (secretwordInput.contains(Letter)) {
+
+          System.out.println("Correct Letter");
+            
+          System.out.println(Letter);
+            //guessesLeft++;
+            
+            generatedLetter.setText("Correct Guesses: " + Letter);
+            userGuesses = userGuesses + Letter + "";
+            usedLetters.setText("Used Letters: " + userGuesses); 
+            String result = convertToPattern(secretwordInput, userGuesses);
+            rightInput.setText(result);
+         } else {
+               System.out.println("Incorrect Letter");
+               System.out.println(Letter);
+               generatedLetter.setText("Incorrect Guesses: " + Letter);
+               userGuesses = userGuesses + Letter + "";
+               usedLetters.setText("Used Letters: " + userGuesses);
+               String result = convertToPattern(secretwordInput, userGuesses);
+               rightInput.setText(result);
+               GuessesLeft--;
+               guessesLeft.setText("Guesses Left: " + GuessesLeft + "");
+               
+         }
+         //handleGuess();
+      } else if (event.getSource() == hintButton){ 
+    //  handleHint();
+ 
+        char resultChar = getHintLetter(secretwordInput, userGuesses);
+        userGuesses = userGuesses + resultChar + "";
+        usedLetters.setText("Used Letters: " + userGuesses);
+        String result = convertToPattern(secretwordInput, userGuesses);
+        rightInput.setText(result);
+
+        GuessesLeft = GuessesLeft - 2;
+        guessesLeft.setText("Guesses Left: " + GuessesLeft);
+                
+      }
+      
+      if (GuessesLeft > 0) {
+
+         youWin.setText("You Won!");
+         
+      } else {
+         youWin.setText("You Lose!");
+        }
+        
+       // below is my thought process on how to set the you win and you lose setting in the hangman GUI
+      
+       //if (rightInput.contains("-"){
+        
+       // youWin.setText("You Lose!");
+   }
+   
+  
+   
+
+ 
+   // Helper method that takes a String word and a String of the letters
+   // guessed so far, and returns a pattern representing that word where each 
+   // letter in the word that has not been guessed so far is represented as a dash.
+   // 
+   // Example: given the word "apple" and guessedLetters "o i e s p", returns "- p p - e".
+  private static String convertToPattern(String word, String guessedLetters) {
+      String result = "";
+      for (int i = 0; i < word.length(); i++) {
+         if (guessedLetters.contains("" + word.charAt(i))) {
+            result += word.charAt(i) + " ";
+         } else {
+            result += "- ";
+         }
+      }
+      return result.trim();
+   }
+   
+   // Helper method that takes a String word and a String of the letters
+   // guessed so far, and returns a Random character left in the word
+   // that has not been guessed so far. If all characters have been guessed, returns
+   // the empty character.
+   //
+   // Example: given the word "apple" and guessedLetters "o i e s p", could return 'a' or 'l'
+   private static char getHintLetter(String word, String guessedLetters) {
+      String lettersLeft = "";
+      for (int i = 0; i < word.length(); i++) {
+         if (!guessedLetters.contains("" + word.charAt(i))) {
+            lettersLeft += word.charAt(i);
+         }
+      }
+      if (lettersLeft.length() == 0) {
+         return '\0';
+      }
+      Random r = new Random();
+      int randomIndex = r.nextInt(lettersLeft.length());
+      return lettersLeft.charAt(randomIndex);
+   }
+}
+ 

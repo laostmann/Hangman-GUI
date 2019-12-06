@@ -1,0 +1,18 @@
+import java.util.*;
+
+// Starter code for Hangman client code.
+public class HangmanClient {
+   public static void main(String[] args) {
+      Scanner console = new Scanner(System.in);
+      System.out.print("secret word? ");
+      String secretWord = console.next();
+      // TODO: YOUR CODE HERE
+      // create a HangmanGUI and set it to be visible.
+   
+     HangmanGUI gui = new HangmanGUI(secretWord);
+     gui.setVisible(true);
+   
+   
+   
+   }
+}   
